@@ -10,15 +10,21 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.24",
+    "@datastax/astra-db-ts": "^1.2.1",
     "ai": "^3.1.30",
+    "multer": "^1.4.5-lts.1",
     "next": "14.2.3",
     "openai": "^4.49.0",
+    "pdf-parse": "^1.1.1",
     "react": "^18",
     "react-dom": "^18",
+    "tiktoken": "^1.0.15",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/multer": "^1.4.11",
     "@types/node": "^20",
+    "@types/pdf-parse": "^1.1.4",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
