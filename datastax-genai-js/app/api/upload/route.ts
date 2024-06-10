@@ -1,18 +1,11 @@
 import { DataAPIClient } from "@datastax/astra-db-ts";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import pdfParse from "pdf-parse/lib/pdf-parse";
-import { promises as fs } from "fs";
-import { existsSync } from "fs";
-import path from "path";
-import { get_encoding } from "tiktoken";
-const encoding = get_encoding("cl100k_base");
 
 const {
   ASTRA_DB_API_ENDPOINT,
   ASTRA_DB_APPLICATION_TOKEN,
   ASTRA_DB_COLLECTION,
-  OPENAI_API_KEY,
-  OPENAI_EMBEDDING_MODEL,
 } = process.env;
 
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN || "");
