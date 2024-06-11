@@ -1,15 +1,8 @@
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { OpenAIEmbeddings } from "@langchain/openai";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import {
-  AstraDBVectorStore,
-  AstraLibArgs,
-} from "@langchain/community/vectorstores/astradb";
-
+import { getVectorStore } from "../AstraVectorStore"
 import { NextResponse } from "next/server";
-import test from "node:test";
-import { metadata } from "@/app/layout";
 
 const {
   ASTRA_DB_API_ENDPOINT,
@@ -19,22 +12,23 @@ const {
   OPENAI_EMBEDDING_MODEL,
 } = process.env;
 
-const astraConfig: AstraLibArgs = {
-  token: ASTRA_DB_APPLICATION_TOKEN as string,
-  endpoint: ASTRA_DB_API_ENDPOINT as string,
-  namespace: "default_keyspace",
-  collection: `${ASTRA_DB_COLLECTION}_langchain`,
-  // collectionOptions: {
-  //   vector: {
-  //     dimension: 1536,
-  //     metric: "cosine",
-  //   },
-  // },
-  skipCollectionProvisioning: true,
-};
+// const astraConfig: AstraLibArgs = {
+//   token: ASTRA_DB_APPLICATION_TOKEN as string,
+//   endpoint: ASTRA_DB_API_ENDPOINT as string,
+//   namespace: "default_keyspace",
+//   collection: `${ASTRA_DB_COLLECTION}_langchain`,
+//   // collectionOptions: {
+//   //   vector: {
+//   //     dimension: 1536,
+//   //     metric: "cosine",
+//   //   },
+//   // },
+//   skipCollectionProvisioning: true,
+// };
 
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN || "");
 const astraDb = client.db(ASTRA_DB_API_ENDPOINT || "");
+
 
 export async function GET(req: Request) {
   /**
@@ -42,10 +36,7 @@ export async function GET(req: Request) {
    */
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("q");
-  const vectorStore = await AstraDBVectorStore.fromExistingIndex(
-    new OpenAIEmbeddings(),
-    astraConfig
-  );
+  const vectorStore = await getVectorStore();
   const documents = await vectorStore.similaritySearch(query as string, 5);
   return NextResponse.json(documents);
 }
@@ -94,12 +85,8 @@ export async function POST(req: Request) {
       },
     };
   });
-
-  const vectorStore = await AstraDBVectorStore.fromDocuments(
-    chunks,
-    new OpenAIEmbeddings(),
-    astraConfig
-  );
+  const vectorStore = await getVectorStore();
+  await vectorStore.addDocuments(chunks)
 
   return NextResponse.json({ loaded: chunks.length });
 }

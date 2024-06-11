@@ -1,7 +1,26 @@
-import { openai } from '@ai-sdk/openai';
-import OpenAI from 'openai';
-import { StreamingTextResponse, streamText, StreamData, CoreMessage } from "ai";
-import { DataAPIClient } from '@datastax/astra-db-ts'
+import { openai } from "@ai-sdk/openai";
+import OpenAI from "openai";
+import { ChatOpenAI } from "@langchain/openai";
+import { formatDocumentsAsString } from "langchain/util/document";
+import {
+  RunnablePassthrough,
+  RunnableSequence,
+} from "@langchain/core/runnables";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import {
+  ChatPromptTemplate,
+  HumanMessagePromptTemplate,
+  SystemMessagePromptTemplate,
+} from "@langchain/core/prompts";
+import {
+  StreamingTextResponse,
+  streamText,
+  StreamData,
+  CoreMessage,
+  LangChainAdapter,
+} from "ai";
+import { DataAPIClient } from "@datastax/astra-db-ts";
+import { getVectorStore } from "../AstraVectorStore";
 
 const {
   ASTRA_DB_API_ENDPOINT,
@@ -11,54 +30,15 @@ const {
   OPENAI_EMBEDDING_MODEL,
 } = process.env;
 
-const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN || '');
-const astraDb = client.db(ASTRA_DB_API_ENDPOINT || '');
-
+const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN || "");
+const astraDb = client.db(ASTRA_DB_API_ENDPOINT || "");
 
 const openai2 = new OpenAI({
   apiKey: OPENAI_API_KEY,
 });
 
-// Allow streaming responses up to 30 seconds
-export const maxDuration = 30;
-
-export async function POST(req: Request) {
-  const { messages } = await req.json();
-  console.log("Messages:", messages)
-
-  const latestMessage = messages[messages?.length - 1]?.content;
-
-  let docContext = "";
-
-  // const embedding = await openai2.embeddings.create({
-  //   model: OPENAI_EMBEDDING_MODEL || "text-embedding-3-small",
-  //   input: latestMessage,
-  //   encoding_format: "float",
-  // });
-
-  try {
-    const collection = await astraDb.collection(ASTRA_DB_COLLECTION||'');
-    const cursor = collection.find({}, {
-      sort: {
-        $vectorize: latestMessage
-      },
-      limit: 10,
-    });
-
-    const documents = await cursor.toArray();
-    console.log(documents)
-
-    const docsMap = documents?.map((doc) => doc['$vectorize']);
-
-    docContext = JSON.stringify(docsMap);
-  } catch (e) {
-    console.log("Error querying db...");
-    docContext = "";
-  }
-
-  const Prompt: CoreMessage = {
-    role: "system",
-    content: `You are an AI assistant who answers question abour real estate financing in Brazil.
+// Constants for templates
+const SYSTEM_TEMPLATE = `You are an AI assistant who answers question abour real estate financing in Brazil.
         You are talking to people interested in public financing from CAIXA, a public bank in Brazil. 
         Use the below context to augment what you know about real estate.
         The context will provide you with the most recent page data from CAIXA's website.
@@ -66,27 +46,43 @@ export async function POST(req: Request) {
         Format responses using markdown where applicable and don't return images.
         ----------------
         START CONTEXT
-        ${docContext}
+        {context}
         END CONTEXT
-        ----------------
-        QUESTION: ${latestMessage}
-        ----------------      
-        `,
-  };
-  console.log(Prompt)
+`;
 
-  const result = await streamText({
-    model: openai("gpt-4-turbo"),
-    messages: [Prompt],
-  });
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
 
-  const data = new StreamData();
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+  const latestMessage = messages[messages?.length - 1]?.content;
+  const vectorStore = await getVectorStore();
+  const retriever = vectorStore.asRetriever(10);
 
-  const stream = result.toAIStream({
-    onFinal(_) {
-      data.close();
+  const openAIModel = new ChatOpenAI({ model: "gpt-4-turbo" });
+
+  const msgs = [
+    SystemMessagePromptTemplate.fromTemplate(SYSTEM_TEMPLATE),
+    HumanMessagePromptTemplate.fromTemplate("{question}"),
+  ];
+
+  const prompt = ChatPromptTemplate.fromMessages(msgs);
+
+  const chain = RunnableSequence.from([
+    {
+      context: retriever.pipe(formatDocumentsAsString),
+      question: new RunnablePassthrough(),
     },
-  });
+    prompt,
+    openAIModel,
+    new StringOutputParser(),
+  ]);
 
-  return new StreamingTextResponse(stream, {}, data);
+  console.log(chain);
+
+  const stream = await chain.stream(latestMessage);
+
+  const aiStream = LangChainAdapter.toAIStream(stream);
+
+  return new StreamingTextResponse(aiStream);
 }
