@@ -22,5 +22,8 @@ Iniciamos a aplicação seguindo o getting started da Vercel (https://sdk.vercel
 npx create-next-app@latest
 cd datastax-genai-js
 npm install ai @ai-sdk/openai zod
+npm install @datastax/astra-db-ts
 touch .env.local
 ```
+
+# Executando

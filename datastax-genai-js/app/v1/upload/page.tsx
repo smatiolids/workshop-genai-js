@@ -25,7 +25,7 @@ export default function Home() {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch("/api/upload", {
+    const response = await fetch("/api/v1/upload", {
       method: "POST",
       body: formData,
     });
@@ -35,7 +35,7 @@ export default function Home() {
   };
 
   const handleDelete = async () => {
-    const response = await fetch("/api/upload", {
+    const response = await fetch("/api/v1/upload", {
       method: "DELETE",
     });
 
@@ -44,7 +44,7 @@ export default function Home() {
   };
 
   const handleGetChunks = async () => {
-    const response = await fetch("/api/upload");
+    const response = await fetch("/api/v1/upload");
     const data = await response.json();
     setChunks(data);
   };

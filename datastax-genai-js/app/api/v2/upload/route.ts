@@ -1,3 +1,4 @@
+import { DataAPIClient } from "@datastax/astra-db-ts";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
@@ -32,23 +33,31 @@ const astraConfig: AstraLibArgs = {
   skipCollectionProvisioning: true,
 };
 
+const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN || "");
+const astraDb = client.db(ASTRA_DB_API_ENDPOINT || "");
+
 export async function GET(req: Request) {
   /**
    * Returns first 5 documents from the collection
    */
-  // const collection = await astraDb.collection(ASTRA_DB_COLLECTION as string);
-  // const data = await collection.find({}, { limit: 5 });
-  // const documents = await data.toArray();
-  // return NextResponse.json(documents);
+  const { searchParams } = new URL(req.url);
+  const query = searchParams.get("q");
+  const vectorStore = await AstraDBVectorStore.fromExistingIndex(
+    new OpenAIEmbeddings(),
+    astraConfig
+  );
+  const documents = await vectorStore.similaritySearch(query as string, 5);
+  return NextResponse.json(documents);
 }
 
 export async function DELETE(req: Request) {
   /**
    * Deletes all the documents from the collection
    */
-  // const collection = await astraDb.collection(ASTRA_DB_COLLECTION as string);
-  // const res = await collection.deleteAll();
-  // return NextResponse.json({ message: res });
+
+  const collection = await astraDb.collection(`${ASTRA_DB_COLLECTION}_langchain` as string);
+  const res = await collection.deleteAll();
+  return NextResponse.json({ message: res });
 }
 
 export async function POST(req: Request) {
@@ -74,6 +83,8 @@ export async function POST(req: Request) {
     chunkSize: 500,
     chunkOverlap: 15,
   });
+
+  // const chunks = await splitter.splitDocuments(docs);
 
   const chunks = (await splitter.splitDocuments(docs)).map((doc) => {
     return {
