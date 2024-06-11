@@ -2,6 +2,10 @@ import { DataAPIClient } from "@datastax/astra-db-ts";
 import { NextResponse } from "next/server";
 import pdfParse from "pdf-parse/lib/pdf-parse";
 
+/**
+ * Based on: https://github.com/datastax/astra-db-ts
+ */
+
 const {
   ASTRA_DB_API_ENDPOINT,
   ASTRA_DB_APPLICATION_TOKEN,
@@ -54,7 +58,6 @@ export async function POST(req: Request) {
   const fileBuffer = Buffer.from(await file.arrayBuffer());
   console.log(fileBuffer);
   const data = await pdfParse(fileBuffer);
-  //   console.log(data);
 
   const pdfContent = data.text;
   const chunks = splitText(pdfContent, 1000);
@@ -72,24 +75,9 @@ export async function POST(req: Request) {
     });
   }
 
-  //   const destinationPath = path.join(process.cwd(), "public/tmp");
-  //   console.log(destinationPath);
-
-  //   const fileArrayBuffer = await file.arrayBuffer();
-
-  //   if (!existsSync(destinationPath)) {
-  //     fs.mkdir(destinationPath, { recursive: true });
-  //   }
-
-  //   await fs.writeFile(
-  //     path.join(destinationPath, file.name),
-  //     Buffer.from(fileArrayBuffer)
-  //   );
-
   return NextResponse.json({
     fileName: file.name,
     size: file.size,
-    chunks: count,
-    // content: pdfContent,
+    chunks: count
   });
 }
