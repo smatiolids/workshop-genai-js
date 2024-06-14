@@ -30,31 +30,25 @@ export async function POST(req: Request) {
 
   let docContext = "";
 
-  // const embedding = await openai2.embeddings.create({
-  //   model: OPENAI_EMBEDDING_MODEL || "text-embedding-3-small",
-  //   input: latestMessage,
-  //   encoding_format: "float",
-  // });
+  // try {
+  //   const collection = await astraDb.collection(ASTRA_DB_COLLECTION||'');
+  //   const cursor = collection.find({}, {
+  //     sort: {
+  //       $vectorize: latestMessage
+  //     },
+  //     limit: 10,
+  //   });
 
-  try {
-    const collection = await astraDb.collection(ASTRA_DB_COLLECTION||'');
-    const cursor = collection.find({}, {
-      sort: {
-        $vectorize: latestMessage
-      },
-      limit: 10,
-    });
+  //   const documents = await cursor.toArray();
+  //   console.log(documents)
 
-    const documents = await cursor.toArray();
-    console.log(documents)
+  //   const docsMap = documents?.map((doc) => doc['$vectorize']);
 
-    const docsMap = documents?.map((doc) => doc['$vectorize']);
-
-    docContext = JSON.stringify(docsMap);
-  } catch (e) {
-    console.log("Error querying db...");
-    docContext = "";
-  }
+  //   docContext = JSON.stringify(docsMap);
+  // } catch (e) {
+  //   console.log("Error querying db...");
+  //   docContext = "";
+  // }
 
   const Prompt: CoreMessage = {
     role: "system",
