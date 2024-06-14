@@ -3,8 +3,8 @@
 ## Prerequisites
 
 An Astra DB account. You can create one here (https://astra.datastax.com/register)
-An OpenAI account and api key create one here (https://platform.openai.com/)
 
+An OpenAI account and api key create one here (https://platform.openai.com/)
 
 Create a Vector Database in Astra and generate and Application Token.
 
