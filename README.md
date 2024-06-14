@@ -1,18 +1,12 @@
 # GenAI for Javascript Developers
 
-## Prerequisites
+## Prerequisitos
 
-An Astra DB account. You can create one here (https://astra.datastax.com/register)
+Uma conta no Astra DB. Você pode criar uma aqui: (https://astra.datastax.com/register)
 
-An OpenAI account and api key create one here (https://platform.openai.com/)
+Uma conta na OpenAI. Você pode criar uma aqui: (https://platform.openai.com/)
 
-Create a Vector Database in Astra and generate and Application Token.
-
-Copy to supplied .env.example to .env and enter your credentials for OpenAI and AstraDB:
-
-OPENAI_API_KEY: API key for OPENAI
-ASTRA_DB_API_ENDPOINT: Your Astra DB vector database endpoint
-ASTRA_DB_APPLICATION_TOKEN: The generated app token for your Astra database
+Recommended version: NODE 18
 
 # Criando o app
 
