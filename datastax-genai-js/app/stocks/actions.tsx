@@ -285,14 +285,14 @@ Besides that, you can also chat with users and do some calculations if needed.`,
       );
 
       // fetch actual price from Astra DB if it's in the S&P 500
-      // const collection = await astraDb.collection("stocks")
-      // const doc = await collection.findOne({ Symbol: symbol })
-      // if (doc) {
-      //   price = parseFloat(doc.Currentprice)
-      // }
-      // else {
-      //   await sleep(1000);
-      // }
+      const collection = await astraDb.collection("stocks")
+      const doc = await collection.findOne({ Symbol: symbol })
+      if (doc) {
+        price = parseFloat(doc.Currentprice)
+      }
+      else {
+        await sleep(1000);
+      }
 
       reply.done(
         <BotCard>

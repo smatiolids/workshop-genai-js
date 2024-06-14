@@ -24,11 +24,11 @@ const SYSTEM_TEMPLATE = `You are an AI assistant who answers question abour real
         If the context doesn't include the information you need answer based on your existing knowledge and don't mention the source of your information or what the context does or doesn't include.
         Format responses using markdown where applicable and don't return images.
 `      
-// + `        ----------------
-//         START CONTEXT
-//         {context}
-//         END CONTEXT
-// `;
++ `        ----------------
+        START CONTEXT
+        {context}
+        END CONTEXT
+`;
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -37,8 +37,8 @@ export async function POST(req: Request) {
 
   const { messages } = await req.json();
   const latestMessage = messages[messages?.length - 1]?.content;
-  // const vectorStore = await getVectorStore();
-  // const retriever = vectorStore.asRetriever(10);
+  const vectorStore = await getVectorStore();
+  const retriever = vectorStore.asRetriever(10);
 
   const openAIModel = new ChatOpenAI({ model: "gpt-4-turbo" });
 
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
   const chain = RunnableSequence.from([
     {
-      // context: retriever.pipe(formatDocumentsAsString),
+      context: retriever.pipe(formatDocumentsAsString),
       question: new RunnablePassthrough(),
     },
     prompt,
