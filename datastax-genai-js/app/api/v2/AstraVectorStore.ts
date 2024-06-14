@@ -6,9 +6,8 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 const {
   ASTRA_DB_API_ENDPOINT,
   ASTRA_DB_APPLICATION_TOKEN,
-  ASTRA_DB_COLLECTION,
-  OPENAI_API_KEY,
-  OPENAI_EMBEDDING_MODEL,
+  ASTRA_DB_COLLECTION_EX2,
+  OPENAI_EMBEDDING_MODEL_EX2
 } = process.env;
 
 let vectorStorePromise: Promise<AstraDBVectorStore>;
@@ -17,13 +16,7 @@ const astraConfig: AstraLibArgs = {
   token: ASTRA_DB_APPLICATION_TOKEN as string,
   endpoint: ASTRA_DB_API_ENDPOINT as string,
   namespace: "default_keyspace",
-  collection: `${ASTRA_DB_COLLECTION}_langchain`,
-  // collectionOptions: {
-  //   vector: {
-  //     dimension: 1536,
-  //     metric: "cosine",
-  //   },
-  // },
+  collection: `${ASTRA_DB_COLLECTION_EX2}`,
   skipCollectionProvisioning: true,
 };
 
@@ -42,7 +35,7 @@ async function initVectorStore() {
   try {
     // Initialize the vector store.
     const vectorStore = await AstraDBVectorStore.fromExistingIndex(
-      new OpenAIEmbeddings(),
+      new OpenAIEmbeddings({model:OPENAI_EMBEDDING_MODEL_EX2}),
       astraConfig
     );
 

@@ -30,32 +30,32 @@ export async function POST(req: Request) {
 
   let docContext = "";
 
-  // try {
-  //   const collection = await astraDb.collection(ASTRA_DB_COLLECTION||'');
-  //   const cursor = collection.find({}, {
-  //     sort: {
-  //       $vectorize: latestMessage
-  //     },
-  //     limit: 10,
-  //   });
+  try {
+    const collection = await astraDb.collection(ASTRA_DB_COLLECTION||'');
+    const cursor = collection.find({}, {
+      sort: {
+        $vectorize: latestMessage
+      },
+      limit: 10,
+    });
 
-  //   const documents = await cursor.toArray();
-  //   console.log(documents)
+    const documents = await cursor.toArray();
+    console.log(documents)
 
-  //   const docsMap = documents?.map((doc) => doc['$vectorize']);
+    const docsMap = documents?.map((doc) => doc['$vectorize']);
 
-  //   docContext = JSON.stringify(docsMap);
-  // } catch (e) {
-  //   console.log("Error querying db...");
-  //   docContext = "";
-  // }
+    docContext = JSON.stringify(docsMap);
+  } catch (e) {
+    console.log("Error querying db...");
+    docContext = "";
+  }
 
   const Prompt: CoreMessage = {
     role: "system",
     content: `You are an AI assistant who answers question abour real estate financing in Brazil.
-        You are talking to people interested in public financing from CAIXA, a public bank in Brazil. 
+        You are talking to people interested in public financing. 
         Use the below context to augment what you know about real estate.
-        The context will provide you with the most recent page data from CAIXA's website.
+        The context will provide you with the most recent page data from the bank website.
         If the context doesn't include the information you need answer based on your existing knowledge and don't mention the source of your information or what the context does or doesn't include.
         Format responses using markdown where applicable and don't return images.
         ----------------

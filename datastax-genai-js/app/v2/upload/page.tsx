@@ -86,25 +86,21 @@ export default function Home() {
           <thead>
             <tr>
               <th className="py-2 px-4 border-b border-gray-300">ID</th>
-              <th className="py-2 px-4 border-b border-gray-300">$vectorize</th>
-              <th className="py-2 px-4 border-b border-gray-300">Timestamp</th>
+              <th className="py-2 px-4 border-b border-gray-300">Text</th>
               <th className="py-2 px-4 border-b border-gray-300">$vector</th>
             </tr>
           </thead>
           <tbody>
             {chunks.map((chunk) => (
-              <tr key={chunk._id}>
+              <tr key={chunk.metadata._id}>
                 <td className="py-2 px-4 border-b border-gray-300">
-                  {chunk._id}
+                  {chunk.metadata._id}
                 </td>
                 <td className="py-2 px-4 border-b border-gray-300">
-                  {chunk.$vectorize.substring(0,100)}...
+                  {chunk.pageContent.substring(0,100)}...
                 </td>
                 <td className="py-2 px-4 border-b border-gray-300">
-                  {chunk.ts}
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300">
-                  {chunk.$vector.slice(0,10)}...
+                  {chunk.metadata.$vector.slice(0,10)}...
                 </td>
               </tr>
             ))}

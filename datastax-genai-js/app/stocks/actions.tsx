@@ -1,9 +1,6 @@
 import 'server-only';
 
 import { createAI, createStreamableUI, getMutableAIState, render } from 'ai/rsc';
-import OpenAI from 'openai';
-
-import { DataAPIClient } from '@datastax/astra-db-ts'
 
 import {
   spinner,
@@ -26,6 +23,10 @@ import { z } from 'zod';
 import { StockSkeleton } from '@/components/llm-stocks/stock-skeleton';
 import { EventsSkeleton } from '@/components/llm-stocks/events-skeleton';
 import { StocksSkeleton } from '@/components/llm-stocks/stocks-skeleton';
+
+import OpenAI from 'openai';
+
+import { DataAPIClient } from '@datastax/astra-db-ts'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || '',
@@ -284,14 +285,14 @@ Besides that, you can also chat with users and do some calculations if needed.`,
       );
 
       // fetch actual price from Astra DB if it's in the S&P 500
-      const collection = await astraDb.collection("stocks")
-      const doc = await collection.findOne({ Symbol: symbol })
-      if (doc) {
-        price = parseFloat(doc.Currentprice)
-      }
-      else {
-        await sleep(1000);
-      }
+      // const collection = await astraDb.collection("stocks")
+      // const doc = await collection.findOne({ Symbol: symbol })
+      // if (doc) {
+      //   price = parseFloat(doc.Currentprice)
+      // }
+      // else {
+      //   await sleep(1000);
+      // }
 
       reply.done(
         <BotCard>

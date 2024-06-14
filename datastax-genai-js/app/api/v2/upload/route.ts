@@ -8,23 +8,7 @@ const {
   ASTRA_DB_API_ENDPOINT,
   ASTRA_DB_APPLICATION_TOKEN,
   ASTRA_DB_COLLECTION,
-  OPENAI_API_KEY,
-  OPENAI_EMBEDDING_MODEL,
 } = process.env;
-
-// const astraConfig: AstraLibArgs = {
-//   token: ASTRA_DB_APPLICATION_TOKEN as string,
-//   endpoint: ASTRA_DB_API_ENDPOINT as string,
-//   namespace: "default_keyspace",
-//   collection: `${ASTRA_DB_COLLECTION}_langchain`,
-//   // collectionOptions: {
-//   //   vector: {
-//   //     dimension: 1536,
-//   //     metric: "cosine",
-//   //   },
-//   // },
-//   skipCollectionProvisioning: true,
-// };
 
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN || "");
 const astraDb = client.db(ASTRA_DB_API_ENDPOINT || "");
@@ -35,9 +19,9 @@ export async function GET(req: Request) {
    * Returns first 5 documents from the collection
    */
   const { searchParams } = new URL(req.url);
-  const query = searchParams.get("q");
+  // const query = searchParams.get("q");
   const vectorStore = await getVectorStore();
-  const documents = await vectorStore.similaritySearch(query as string, 5);
+  const documents = await vectorStore.similaritySearch("", 5);
   return NextResponse.json(documents);
 }
 
@@ -74,8 +58,6 @@ export async function POST(req: Request) {
     chunkSize: 500,
     chunkOverlap: 15,
   });
-
-  // const chunks = await splitter.splitDocuments(docs);
 
   const chunks = (await splitter.splitDocuments(docs)).map((doc) => {
     return {
