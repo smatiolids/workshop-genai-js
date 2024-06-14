@@ -65,7 +65,7 @@ Passos:
 - Repetir perguntas em localhost:3000v2/chat
 
 
-# Ex3
+# Ex3 - Stocks & React Components
 
 Passos:
 
