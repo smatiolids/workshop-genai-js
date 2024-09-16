@@ -29,29 +29,29 @@ export async function POST(req: Request) {
 
   let docContext = "";
 
-  try {
-    const collection = await astraDb.collection(ASTRA_DB_COLLECTION_EX1 || "");
-    const cursor = collection.find(
-      {},
-      {
-        sort: {
-          $vectorize: latestMessage,
-        },
-        limit: 10,
-        projection: { $vectorize: 1 },
-      }
-    );
+  // try {
+  //   const collection = await astraDb.collection(ASTRA_DB_COLLECTION_EX1 || "");
+  //   const cursor = collection.find(
+  //     {},
+  //     {
+  //       sort: {
+  //         $vectorize: latestMessage,
+  //       },
+  //       limit: 10,
+  //       projection: { $vectorize: 1 },
+  //     }
+  //   );
 
-    const documents = await cursor.toArray();
-    console.log(documents);
+  //   const documents = await cursor.toArray();
+  //   console.log(documents);
 
-    const docsMap = documents?.map((doc) => doc["$vectorize"]);
+  //   const docsMap = documents?.map((doc) => doc["$vectorize"]);
 
-    docContext = JSON.stringify(docsMap);
-  } catch (e) {
-    console.log("Error querying db...", e);
-    docContext = "";
-  }
+  //   docContext = JSON.stringify(docsMap);
+  // } catch (e) {
+  //   console.log("Error querying db...", e);
+  //   docContext = "";
+  // }
 
   const Prompt: CoreMessage = {
     role: "system",

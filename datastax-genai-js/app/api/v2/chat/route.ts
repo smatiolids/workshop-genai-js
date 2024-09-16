@@ -40,7 +40,7 @@ export async function POST(req: Request) {
   const vectorStore = await getVectorStore();
   const retriever = vectorStore.asRetriever(10);
 
-  const openAIModel = new ChatOpenAI({ model: "gpt-4-turbo" });
+  const model = new ChatOpenAI({ model: "gpt-4-turbo" });
 
   const msgs = [
     SystemMessagePromptTemplate.fromTemplate(SYSTEM_TEMPLATE),
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
       question: new RunnablePassthrough(),
     },
     prompt,
-    openAIModel,
+    model,
     new StringOutputParser(),
   ]);
 

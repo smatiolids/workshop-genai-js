@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import LangflowClient from "./LangflowClient";
-const { LANGFLOW_TOKEN, LANGFLOW_ID } = process.env;
+const { LANGFLOW_TOKEN, BASE_API_URL, LANGFLOW_ID, FLOW_ID } = process.env;
 
 const langflowClient = new LangflowClient(
-  "https://api.langflow.astra.datastax.com",
+  BASE_API_URL,
   LANGFLOW_TOKEN
 );
 
@@ -12,12 +12,13 @@ export async function POST(
   { params }: { params: { name: string } }
 ) {
   const r = await req.json();
-  const langflowId = LANGFLOW_ID;
+  const langflowId = FLOW_ID;
+  console.log(params)
 
   try {
     const response = await langflowClient.runFlow(
       params['flow'],
-      langflowId,
+      LANGFLOW_ID,
       r['input_value'],
       r['input_type'],
       r['output_type'],
