@@ -1,18 +1,18 @@
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import { getVectorStore } from "../AstraVectorStore"
+import { getVectorStore } from "../AstraVectorStore";
 import { NextResponse } from "next/server";
+import { Document } from "langchain/document";
 
 const {
   ASTRA_DB_API_ENDPOINT,
   ASTRA_DB_APPLICATION_TOKEN,
-  ASTRA_DB_COLLECTION,
+  ASTRA_DB_COLLECTION_EX2,
 } = process.env;
 
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN || "");
 const astraDb = client.db(ASTRA_DB_API_ENDPOINT || "");
-
 
 export async function GET(req: Request) {
   /**
@@ -30,7 +30,9 @@ export async function DELETE(req: Request) {
    * Deletes all the documents from the collection
    */
 
-  const collection = await astraDb.collection(`${ASTRA_DB_COLLECTION}_langchain` as string);
+  const collection = await astraDb.collection(
+    `${ASTRA_DB_COLLECTION_EX2}` as string
+  );
   const res = await collection.deleteAll();
   return NextResponse.json({ message: res });
 }
@@ -60,15 +62,15 @@ export async function POST(req: Request) {
   });
 
   const chunks = (await splitter.splitDocuments(docs)).map((doc) => {
-    return {
+    return new Document({
       pageContent: doc.pageContent,
       metadata: {
         source: doc.metadata.source,
       },
-    };
+    });
   });
   const vectorStore = await getVectorStore();
-  await vectorStore.addDocuments(chunks)
+  await vectorStore.addDocuments(chunks);
 
   return NextResponse.json({ loaded: chunks.length });
 }

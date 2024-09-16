@@ -1,19 +1,18 @@
-import { openai } from '@ai-sdk/openai';
-import OpenAI from 'openai';
+import { openai } from "@ai-sdk/openai";
+import OpenAI from "openai";
 import { StreamingTextResponse, streamText, StreamData, CoreMessage } from "ai";
-import { DataAPIClient } from '@datastax/astra-db-ts'
+import { DataAPIClient } from "@datastax/astra-db-ts";
 
 const {
   ASTRA_DB_API_ENDPOINT,
   ASTRA_DB_APPLICATION_TOKEN,
-  ASTRA_DB_COLLECTION,
+  ASTRA_DB_COLLECTION_EX1,
   OPENAI_API_KEY,
   OPENAI_EMBEDDING_MODEL,
 } = process.env;
 
-const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN || '');
-const astraDb = client.db(ASTRA_DB_API_ENDPOINT || '');
-
+const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN || "");
+const astraDb = client.db(ASTRA_DB_API_ENDPOINT || "");
 
 const openai2 = new OpenAI({
   apiKey: OPENAI_API_KEY,
@@ -24,29 +23,33 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
-  console.log("Messages:", messages)
+  console.log("Messages:", messages);
 
   const latestMessage = messages[messages?.length - 1]?.content;
 
   let docContext = "";
 
   try {
-    const collection = await astraDb.collection(ASTRA_DB_COLLECTION||'');
-    const cursor = collection.find({}, {
-      sort: {
-        $vectorize: latestMessage
-      },
-      limit: 10,
-    });
+    const collection = await astraDb.collection(ASTRA_DB_COLLECTION_EX1 || "");
+    const cursor = collection.find(
+      {},
+      {
+        sort: {
+          $vectorize: latestMessage,
+        },
+        limit: 10,
+        projection: { $vectorize: 1 },
+      }
+    );
 
     const documents = await cursor.toArray();
-    console.log(documents)
+    console.log(documents);
 
-    const docsMap = documents?.map((doc) => doc['$vectorize']);
+    const docsMap = documents?.map((doc) => doc["$vectorize"]);
 
     docContext = JSON.stringify(docsMap);
   } catch (e) {
-    console.log("Error querying db...");
+    console.log("Error querying db...", e);
     docContext = "";
   }
 
@@ -67,10 +70,10 @@ export async function POST(req: Request) {
         ----------------      
         `,
   };
-  console.log(Prompt)
+  console.log(Prompt);
 
   const result = await streamText({
-    model: openai("gpt-4-turbo"),
+    model: openai(process.env.OPENAI_MODEL),
     messages: [Prompt],
   });
 

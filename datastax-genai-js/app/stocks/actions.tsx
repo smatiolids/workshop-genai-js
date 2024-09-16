@@ -34,7 +34,8 @@ const openai = new OpenAI({
 
 const {
   ASTRA_DB_API_ENDPOINT,
-  ASTRA_DB_APPLICATION_TOKEN
+  ASTRA_DB_APPLICATION_TOKEN,
+  OPENAI_MODEL
 } = process.env
 
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN || '');
@@ -124,7 +125,7 @@ async function submitUserMessage(content: string) {
   );
 
   const completion = runOpenAICompletion(openai, {
-    model: 'gpt-3.5-turbo',
+    model: OPENAI_MODEL || 'gpt-3.5-turbo',
     stream: true,
     messages: [
       {

@@ -89,6 +89,7 @@ export default function Home() {
               <th className="py-2 px-4 border-b border-gray-300">$vectorize</th>
               <th className="py-2 px-4 border-b border-gray-300">Timestamp</th>
               <th className="py-2 px-4 border-b border-gray-300">$vector</th>
+              <th className="py-2 px-4 border-b border-gray-300">Metadata</th>
             </tr>
           </thead>
           <tbody>
@@ -104,7 +105,10 @@ export default function Home() {
                   {chunk.ts}
                 </td>
                 <td className="py-2 px-4 border-b border-gray-300">
-                  {chunk.$vector.slice(0,10)}...
+                  {chunk.$vector.slice(0,5)}...
+                </td>
+                <td className="py-2 px-4 border-b border-gray-300">
+                  {JSON.stringify(chunk.metadata)}...
                 </td>
               </tr>
             ))}

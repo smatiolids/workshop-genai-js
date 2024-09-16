@@ -87,7 +87,6 @@ export default function Home() {
             <tr>
               <th className="py-2 px-4 border-b border-gray-300">ID</th>
               <th className="py-2 px-4 border-b border-gray-300">Text</th>
-              <th className="py-2 px-4 border-b border-gray-300">$vector</th>
             </tr>
           </thead>
           <tbody>
@@ -98,9 +97,6 @@ export default function Home() {
                 </td>
                 <td className="py-2 px-4 border-b border-gray-300">
                   {chunk.pageContent.substring(0,100)}...
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300">
-                  {chunk.metadata.$vector.slice(0,10)}...
                 </td>
               </tr>
             ))}
