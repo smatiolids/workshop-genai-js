@@ -27,9 +27,16 @@ cp .env.example .env.local
 
 Atualizar as variáveis:
 
-- ASTRA_DB_APPLICATION_TOKEN
-- ASTRA_DB_API_ENDPOINT
-- OPENAI_API_KEY
+- ASTRA_DB_APPLICATION_TOKEN=""
+- ASTRA_DB_API_ENDPOINT=""
+- OPENAI_API_KEY=""
+- ASTRA_DB_COLLECTION_EX1=real_estate_financing_ex1
+- OPENAI_EMBEDDING_MODEL_EX1=text-embedding-ada-002
+- ASTRA_DB_COLLECTION_EX2=real_estate_financing_ex2
+- OPENAI_EMBEDDING_MODEL_EX2=text-embedding-ada-002
+- OPENAI_MODEL="gpt-4-1106-preview"
+- LANGFLOW_TOKEN=""
+- LANGFLOW_ID=""
 
 # Executando
 
@@ -41,10 +48,10 @@ npm run dev
 
 Passos:
 
-- Acessar localhost:3000/v1/chat e fazer perguntas sobre financiamento imobiliario
-- Configurar o $vectorize
 - Criar collection "real_estate_financing" no Astra
+- Configurar o $vectorize
 - Carregar documento em localhost:3000/v1/upload
+- Acessar localhost:3000/v1/chat e fazer perguntas sobre financiamento imobiliario
 
 ## Configuração do Vectorize
 
@@ -64,8 +71,16 @@ Passos:
 - Carregar documento em localhost:3000/v2/upload
 - Repetir perguntas em localhost:3000v2/chat
 
+# Ex3 - RAG com Langflow
 
-# Ex3 - Stocks & React Components
+Passos:
+
+- Criar um fluxo RAG
+- Carregar o documento para a collection real_estate_financing_ex3
+- Testar o fluxo no Playground
+- Usar o Chat Widget
+
+# Ex4 - Stocks & React Components
 
 Passos:
 
