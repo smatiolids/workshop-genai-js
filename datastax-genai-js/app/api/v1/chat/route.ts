@@ -55,11 +55,8 @@ export async function POST(req: Request) {
 
   const Prompt: CoreMessage = {
     role: "system",
-    content: `You are an AI assistant who answers question abour real estate financing in Brazil.
-        You are talking to people interested in public financing. 
-        Use the below context to augment what you know about real estate.
-        The context will provide you with the most recent page data from the bank website.
-        If the context doesn't include the information you need answer based on your existing knowledge and don't mention the source of your information or what the context does or doesn't include.
+    content: `You are an AI assistant who answers question about a running race in Brazil.
+        Use the below context to augment what you know about the race.
         Format responses using markdown where applicable and don't return images.
         ----------------
         START CONTEXT
